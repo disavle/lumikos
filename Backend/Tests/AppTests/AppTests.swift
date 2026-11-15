@@ -117,6 +117,20 @@ struct AppTests {
         }
     }
 
+    @Test("Series details and seasons have routes (no 404)")
+    func seriesRoutes() async throws {
+        try await withApp { app in
+            let token = try await register(app)
+            // There is no TMDB token in tests, so the server answers 500 "TMDB_TOKEN is not set".
+            // That is fine here: we only check that the route exists.
+            for path in ["titles/tv/1399", "titles/tv/1399/seasons/1", "titles/movie/603"] {
+                try await app.testing().test(.GET, path, headers: bearer(token)) { res async in
+                    #expect(res.status != .notFound, "\(path)")
+                }
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     private func withApp(_ test: (Application) async throws -> Void) async throws {

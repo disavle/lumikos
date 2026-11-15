@@ -7,7 +7,9 @@ struct TitlesController: RouteCollection {
         routes.get("feed", use: feed)
         routes.get("search", use: search)
         routes.get("titles", ":type", ":id", use: details)
-        routes.get("titles", "tv", ":id", "seasons", ":season", use: season)
+        // `:type` here too, not a fixed "tv". Vapor's router prefers a fixed segment and never goes back,
+        // so with a fixed "tv" the request /titles/tv/1668 went into this branch, found no handler and got 404.
+        routes.get("titles", ":type", ":id", "seasons", ":season", use: season)
     }
 
     /// GET /feed?page=1: cards to swipe.
@@ -86,9 +88,10 @@ struct TitlesController: RouteCollection {
 
     /// GET /titles/tv/:id/seasons/:season: episodes of one season.
     func season(req: Request) async throws -> Response {
-        guard let id = req.parameters.get("id", as: Int.self),
-              let number = req.parameters.get("season", as: Int.self)
-        else { throw Abort(.badRequest) }
+        let (type, id) = try titleParameters(req)
+        guard type == .tv, let number = req.parameters.get("season", as: Int.self) else {
+            throw Abort(.badRequest, reason: "Seasons exist only for series: /titles/tv/<id>/seasons/<number>")
+        }
         let info: TMDBSeason = try await TMDB(request: req).get("tv/\(id)/season/\(number)")
         let season = SeasonDetails(
             number: info.seasonNumber,
