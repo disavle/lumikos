@@ -1,0 +1,68 @@
+# One workflow: iOS tests, server tests, and a server deploy after a push to main.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iOS
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5   # installs tuist and ruby from mise.toml
+      - name: Unit tests
+        working-directory: iOS
+        run: |
+          bundle install --quiet
+          bundle exec fastlane test
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    container: swift:6.2
+    steps:
+      - uses: actions/checkout@v7
+      - name: Vapor tests
+        run: swift test --package-path Backend
+
+  # On main: build the server image, push it to ghcr.io and ask Render to run it.
+  # Secrets: RENDER_DEPLOY_HOOK (repo → Settings → Secrets → Actions). GITHUB_TOKEN is automatic.
+  deploy:
+    name: Deploy backend
+    needs: backend
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/lumikos-backend
+      RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          context: Backend
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Deploy on Render
+        if: env.RENDER_DEPLOY_HOOK != ''
+        run: curl --fail --silent --show-error --get "$RENDER_DEPLOY_HOOK" --data-urlencode "imgURL=$IMAGE:${{ github.sha }}"

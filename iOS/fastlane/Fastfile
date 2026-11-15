@@ -1,0 +1,20 @@
+# fastlane automates what you would otherwise click in Xcode.
+# Run from the iOS folder: `bundle exec fastlane test` (or `mise run test` from the repo root).
+default_platform(:ios)
+
+platform :ios do
+  desc "Generate the project and run unit tests on a simulator"
+  lane :test do
+    sh("cd .. && tuist install && tuist generate --no-open")
+    run_tests(project: "Lumikos.xcodeproj", scheme: "Lumikos", output_directory: "fastlane/test_output")
+  end
+
+  # Needs a paid Apple Developer account. Until then this lane is a sketch of what will happen.
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    sh("cd .. && tuist install && tuist generate --no-open")
+    increment_build_number(xcodeproj: "Lumikos.xcodeproj")
+    build_app(project: "Lumikos.xcodeproj", scheme: "Lumikos")
+    upload_to_testflight(skip_waiting_for_build_processing: true)
+  end
+end

@@ -1,0 +1,40 @@
+# UI smoke test with Maestro (https://maestro.dev).
+# Start the server (`mise run api`), run the app in a simulator once, then: `maestro test .maestro`
+# Views are found by accessibility ids from iOS/Lumikos/UI/AXID.swift, so the language does not matter.
+appId: com.disavle.lumikos
+---
+- launchApp:
+    clearState: true
+    clearKeychain: true
+
+# Sign up as a new random user
+- tapOn:
+    id: "auth.switchMode"
+- tapOn:
+    id: "auth.email"
+- inputRandomEmail
+- tapOn:
+    id: "auth.nickname"
+- inputRandomText:
+    length: 10
+- tapOn:
+    id: "auth.password"
+- inputText: "maestro-pass-123"
+- tapOn:
+    id: "auth.submit"
+# iOS may offer to save the password
+- tapOn:
+    text: "Not Now"
+    optional: true
+
+# Like the first card and find it in the list
+- extendedWaitUntil:
+    visible:
+      id: "feed.like"
+    timeout: 60000
+- tapOn:
+    id: "feed.like"
+- tapOn:
+    id: "tab.list"
+- assertVisible:
+    id: "list.row"

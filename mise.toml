@@ -1,0 +1,28 @@
+# mise pins tool versions and keeps short project commands. The same on your Mac and in CI.
+# After cloning: `mise run generate`, then `mise run api` in a second terminal.
+# (Use `mise run generate`, not `mise generate`: that is a built-in mise command.)
+
+[tools]
+tuist = "4.213.0"
+ruby = "4.0.9"   # only for fastlane
+
+[env]
+# Your Team ID for a real iPhone goes into mise.local.toml (it is in .gitignore):
+# TUIST_TEAM_ID = "ABCDE12345"
+
+[tasks.generate]
+description = "Create Lumikos.xcodeproj and open Xcode"
+dir = "iOS"
+run = ["tuist install", "tuist generate"]
+
+[tasks.api]
+description = "Run the server on http://localhost:8080 (needs Backend/.env with TMDB_TOKEN)"
+dir = "Backend"
+run = "swift run App serve --hostname 0.0.0.0"
+
+[tasks.test]
+description = "iOS unit tests (fastlane) and server tests"
+run = [
+  "cd iOS && bundle install --quiet && bundle exec fastlane test",
+  "cd Backend && swift test",
+]
