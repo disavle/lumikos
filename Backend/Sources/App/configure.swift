@@ -37,7 +37,6 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateUser())
     app.migrations.add(CreateUserToken())
     app.migrations.add(CreateListItem())
-    app.migrations.add(CreateFlag())
 
     // Create tables on start: always on your Mac and in tests,
     // and on Render, where the Dockerfile sets AUTO_MIGRATE=true.

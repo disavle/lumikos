@@ -17,12 +17,6 @@ struct Me: Codable, Sendable {
     let nickname: String
 }
 
-struct AppConfigResponse: Codable, Sendable {
-    let minVersion: String
-    let maintenanceMessage: String?
-    let flags: [String: Bool]
-}
-
 /// A short card: what the swipe feed shows.
 struct TitleCard: Codable, Sendable, Hashable, Identifiable {
     let id: Int

@@ -78,18 +78,3 @@ struct MeController: RouteCollection {
         }
     }
 }
-
-/// GET /config: feature toggles for the app. Public, the app reads it before login.
-struct ConfigController: RouteCollection {
-    func boot(routes: any RoutesBuilder) throws {
-        routes.get("config") { req async throws -> ConfigResponse in
-            let flags = try await Flag.query(on: req.db).all()
-            return ConfigResponse(
-                // Set MIN_VERSION on Render to make old apps ask for an update.
-                minVersion: Environment.get("MIN_VERSION") ?? "0.1.0",
-                maintenanceMessage: Environment.get("MAINTENANCE_MESSAGE"),
-                flags: Dictionary(uniqueKeysWithValues: flags.map { ($0.id ?? "", $0.enabled) })
-            )
-        }
-    }
-}

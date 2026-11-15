@@ -42,20 +42,6 @@ struct ListArrangeTests {
     }
 }
 
-@Suite("Feature flags")
-@MainActor
-struct FeatureFlagsTests {
-    // As text "1.10.0" < "1.9.0", as version numbers it is the other way round.
-    @Test("Versions are compared as numbers, not as text", arguments: [
-        ("1.9.0", "1.10.0", true),
-        ("1.10.0", "1.9.0", false),
-        ("1.0.0", "1.0.0", false),
-    ])
-    func versionCompare(version: String, min: String, older: Bool) {
-        #expect(FeatureFlags.isVersion(version, olderThan: min) == older)
-    }
-}
-
 @Suite("JSON from the server")
 struct DecodingTests {
     @Test("A list item decodes with an ISO 8601 date")

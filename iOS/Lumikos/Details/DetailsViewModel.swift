@@ -14,15 +14,11 @@ final class DetailsViewModel {
 
     var onChange: ((ListItem?) -> Void)?
 
-    let ratingsEnabled: Bool
-    let episodesEnabled: Bool
     private let api: APIClient
 
-    init(card: TitleCard, api: APIClient, flags: FeatureFlags) {
+    init(card: TitleCard, api: APIClient) {
         self.card = card
         self.api = api
-        ratingsEnabled = flags.ratingsEnabled
-        episodesEnabled = flags.episodesEnabled
     }
 
     var isInList: Bool { item != nil && item?.status != .skipped }

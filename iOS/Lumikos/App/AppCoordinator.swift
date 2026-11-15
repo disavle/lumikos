@@ -14,7 +14,7 @@ extension Coordinator {
     /// Both tabs open the same details screen, so it lives here.
     /// `onChange` lets the tab refresh itself after I tap a button on the details screen.
     func showDetails(of card: TitleCard, onChange: @escaping (ListItem?) -> Void = { _ in }) {
-        let model = DetailsViewModel(card: card, api: dependencies.api, flags: dependencies.flags)
+        let model = DetailsViewModel(card: card, api: dependencies.api)
         model.onChange = onChange
         let controller = UIHostingController(rootView: DetailsView(model: model))
         controller.navigationItem.largeTitleDisplayMode = .never
@@ -40,8 +40,6 @@ final class AppCoordinator {
 
         if dependencies.tokenStore.token == nil { showAuth() } else { showTabs() }
         window.makeKeyAndVisible()
-
-        Task { await checkConfig() }
     }
 
     private func showAuth() {
@@ -76,20 +74,5 @@ final class AppCoordinator {
     private func setRoot(_ controller: UIViewController) {
         window.rootViewController = controller
         UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
-    }
-
-    /// Feature toggles: an old app version or a maintenance message stop the user with an alert.
-    private func checkConfig() async {
-        await dependencies.flags.refresh(using: dependencies.api)
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
-        let message: String? = if dependencies.flags.needsUpdate(appVersion: version) {
-            String(localized: "Please update Lumikos in the App Store.")
-        } else {
-            dependencies.flags.config?.maintenanceMessage
-        }
-        guard let message else { return }
-        let alert = UIAlertController(title: "Lumikos", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        window.rootViewController?.present(alert, animated: true)
     }
 }

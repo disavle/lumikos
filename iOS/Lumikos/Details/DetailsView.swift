@@ -8,7 +8,7 @@ struct DetailsView: View {
             VStack(alignment: .leading, spacing: 16) {
                 header
                 actions
-                if model.ratingsEnabled, model.isInList {
+                if model.isInList {
                     EmojiRating(rating: model.item?.rating) { rating in
                         Task { await model.setRating(rating) }
                     }
@@ -20,7 +20,7 @@ struct DetailsView: View {
                 if let overview = model.details?.card.overview ?? model.card.overview, !overview.isEmpty {
                     Text(overview)
                 }
-                if model.episodesEnabled, let seasons = model.details?.seasons, !seasons.isEmpty {
+                if let seasons = model.details?.seasons, !seasons.isEmpty {
                     EpisodesView(model: model, seasons: seasons)
                 }
             }

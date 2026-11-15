@@ -1,9 +1,7 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "@%@" : {
-
-    },
+    "@%@" : {},
     "%@ / %@" : {
       "localizations" : {
         "en" : {
@@ -14,9 +12,7 @@
         }
       }
     },
-    "%@ min" : {
-
-    },
+    "%@ min" : {},
     "%@. %@" : {
       "localizations" : {
         "en" : {
@@ -38,9 +34,7 @@
         }
       }
     },
-    "★ %.1f" : {
-
-    },
+    "★ %.1f" : {},
     "Add to list" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -321,17 +315,6 @@
         }
       }
     },
-    "Please update Lumikos in the App Store." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Обнови Lumikos в App Store."
-          }
-        }
-      }
-    },
     "Remove" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -343,9 +326,7 @@
         }
       }
     },
-    "Seasons: %@" : {
-
-    },
+    "Seasons: %@" : {},
     "Seasons: %lld" : {
       "extractionState" : "stale",
       "localizations" : {

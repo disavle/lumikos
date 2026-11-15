@@ -37,14 +37,6 @@ struct MeResponse: Content {
     let nickname: String
 }
 
-// MARK: - Config
-
-struct ConfigResponse: Content {
-    let minVersion: String
-    let maintenanceMessage: String?
-    let flags: [String: Bool]
-}
-
 // MARK: - Titles
 
 /// A short card: for the swipe feed and for lists.

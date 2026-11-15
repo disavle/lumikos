@@ -17,16 +17,6 @@ struct AppTests {
         }
     }
 
-    @Test("Config returns the seeded flags")
-    func config() async throws {
-        try await withApp { app in
-            try await app.testing().test(.GET, "config") { res async throws in
-                let config = try res.content.decode(ConfigResponse.self)
-                #expect(config.flags["ratings"] == true)
-            }
-        }
-    }
-
     @Test("Sign up, then log in with the nickname and see /me")
     func registerLoginMe() async throws {
         try await withApp { app in

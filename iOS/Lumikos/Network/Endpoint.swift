@@ -2,7 +2,6 @@ import Foundation
 
 /// Every request the app makes, in one enum. Adding a request = adding a case here.
 enum Endpoint: Sendable {
-    case config
     case register(email: String, nickname: String, password: String)
     case login(login: String, password: String)
     case logout(token: String)
@@ -17,7 +16,7 @@ enum Endpoint: Sendable {
 
     var method: String {
         switch self {
-        case .config, .feed, .search, .details, .season, .list: "GET"
+        case .feed, .search, .details, .season, .list: "GET"
         case .register, .login, .logout: "POST"
         case .saveItem: "PUT"
         case .deleteAccount, .deleteItem: "DELETE"
@@ -26,7 +25,6 @@ enum Endpoint: Sendable {
 
     var path: String {
         switch self {
-        case .config: "config"
         case .register: "auth/register"
         case .login: "auth/login"
         case .logout: "auth/logout"

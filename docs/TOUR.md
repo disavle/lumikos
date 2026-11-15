@@ -38,13 +38,12 @@ FeedView.task → FeedViewModel.loadIfNeeded → actor FeedLoader → GET /feed
 
 ## 2. Vapor: роуты, модели, миграции
 
-**Открой:** `routes.swift`, `Models/ListItem.swift`, `Models/Flag.swift`, `Controllers/AuthController.swift` (низ файла: `ConfigController`).
+**Открой:** `routes.swift`, `Models/ListItem.swift`, `Controllers/ListController.swift`.
 
 - Роут = путь + async-функция. Возвращаешь `Content`-структуру, Vapor сам делает JSON.
 - Fluent-модель: класс с `@ID`, `@Field`, `@Parent`. Миграция рядом: создаёт таблицу. Локально база SQLite-файл, на Render Postgres, код один.
-- `GET /config`: фичетогглы из таблицы `flags`. В Neon меняешь строку, приложение видит при следующем запуске.
 
-**Руками:** добавь флаг `Flag(key: "feedButtons", enabled: true)` в `CreateFlag`, удали `Backend/db.sqlite`, перезапусти сервер и посмотри `/config`.
+**Руками:** добавь в `ListItem` поле `note` (заметка к фильму): `@OptionalField`, колонка в `CreateListItem`, поле в DTO. Удали `Backend/db.sqlite`, перезапусти сервер и проверь `GET /list`.
 
 ## 3. BFF: сервер как прослойка над TMDB
 

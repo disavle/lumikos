@@ -4,7 +4,6 @@ import Vapor
 func routes(_ app: Application) throws {
     // Public routes: no login needed.
     app.get("health") { _ in "ok" }
-    try app.register(collection: ConfigController())
     try app.register(collection: AuthController())
 
     // Everything below needs `Authorization: Bearer <token>`.
