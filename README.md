@@ -25,7 +25,7 @@ A small iOS app for movies and series. Swipe recommendation cards like in Tinder
 Requirements: Xcode 26, [mise](https://mise.jdx.dev), a free [TMDB API Read Access Token](https://www.themoviedb.org/settings/api).
 
 ```bash
-cp Backend/.env.example Backend/.env   # paste your TMDB token there
+echo 'TMDB_TOKEN=eyJ...' > Backend/.env   # your TMDB token
 mise run api                          # terminal 1: server on http://localhost:8080 (SQLite file)
 mise run generate                     # terminal 2: creates Lumikos.xcodeproj and opens Xcode
 ```
@@ -66,7 +66,7 @@ MIT
 Нужны Xcode 26, [mise](https://mise.jdx.dev) и бесплатный [TMDB API Read Access Token](https://www.themoviedb.org/settings/api).
 
 ```bash
-cp Backend/.env.example Backend/.env   # вставь туда токен TMDB
+echo 'TMDB_TOKEN=eyJ...' > Backend/.env   # твой токен TMDB
 mise run api                          # терминал 1: сервер на http://localhost:8080 (файл SQLite)
 mise run generate                     # терминал 2: создаёт Lumikos.xcodeproj и открывает Xcode
 ```
