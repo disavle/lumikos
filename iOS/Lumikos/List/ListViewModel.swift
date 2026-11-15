@@ -45,7 +45,9 @@ final class ListViewModel {
     }
 
     /// A pure function: easy to test, see LumikosTests.
-    static func arrange(_ items: [ListItem], filter: Filter, sort: Sort) -> (pinned: [ListItem], rest: [ListItem]) {
+    /// `nonisolated`: it touches no state of the view model, so it may run outside the main actor
+    /// (Swift Testing runs tests off the main actor by default).
+    nonisolated static func arrange(_ items: [ListItem], filter: Filter, sort: Sort) -> (pinned: [ListItem], rest: [ListItem]) {
         let filtered = items.filter { item in
             switch filter {
             case .all: true
