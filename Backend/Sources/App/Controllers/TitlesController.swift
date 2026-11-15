@@ -5,6 +5,7 @@ import Vapor
 struct TitlesController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
         routes.get("feed", use: feed)
+        routes.get("search", use: search)
         routes.get("titles", ":type", ":id", use: details)
         routes.get("titles", "tv", ":id", "seasons", ":season", use: season)
     }
@@ -47,6 +48,17 @@ struct TitlesController: RouteCollection {
             return !seen.contains(key) && keys.insert(key).inserted
         }
         return FeedPage(page: page, hasMore: page < trending.totalPages, items: cards.shuffled())
+    }
+
+    /// GET /search?q=dune&page=1: movies and series by name.
+    /// TMDB `search/multi` also returns people; `TitleCard.init?` drops them.
+    func search(req: Request) async throws -> FeedPage {
+        let text = (req.query[String.self, at: "q"] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let page = max(req.query[Int.self, at: "page"] ?? 1, 1)
+        guard !text.isEmpty else { return FeedPage(page: page, hasMore: false, items: []) }
+
+        let result: TMDBPage<TMDBItem> = try await TMDB(request: req).get("search/multi", page: page, query: ["query": text])
+        return FeedPage(page: page, hasMore: page < result.totalPages, items: result.results.compactMap { TitleCard($0) })
     }
 
     /// GET /titles/:type/:id: details plus my list item for this title.

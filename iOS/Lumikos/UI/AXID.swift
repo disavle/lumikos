@@ -18,6 +18,9 @@ enum AXID {
     static let listRow = "list.row"
     static let listAccount = "list.account"
 
+    static let searchRow = "search.row"
+    static let searchAdd = "search.add"
+
     static let detailsAdd = "details.add"
     static let detailsWatched = "details.watched"
     static let detailsPin = "details.pin"

@@ -106,6 +106,17 @@ struct AppTests {
         }
     }
 
+    @Test("An empty search answers at once, without asking TMDB")
+    func emptySearch() async throws {
+        try await withApp { app in
+            let token = try await register(app)
+            try await app.testing().test(.GET, "search?q=%20", headers: bearer(token)) { res async throws in
+                #expect(res.status == .ok)
+                #expect(try res.content.decode(FeedPage.self).items.isEmpty)
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     private func withApp(_ test: (Application) async throws -> Void) async throws {

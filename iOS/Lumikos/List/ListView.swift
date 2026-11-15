@@ -2,43 +2,56 @@ import SwiftUI
 
 struct ListView: View {
     @Bindable var model: ListViewModel
+    @Bindable var search: SearchViewModel
 
     var body: some View {
-        let sections = model.sections
         List {
-            if !model.isOnline {
-                OfflineBanner().listRowInsets(EdgeInsets())
-            }
-            if let error = model.errorMessage {
-                Text(error).foregroundStyle(.red)
-            }
-
-            Picker("Show", selection: $model.filter) {
-                Text("All").tag(ListViewModel.Filter.all)
-                Text("Movies").tag(ListViewModel.Filter.movies)
-                Text("Series").tag(ListViewModel.Filter.series)
-            }
-            .pickerStyle(.segmented)
-            .listRowBackground(Color.clear)
-
-            if !sections.pinned.isEmpty {
-                Section("Watching now") {
-                    ForEach(sections.pinned, id: \.key) { row($0) }
-                }
-            }
-            Section(sections.pinned.isEmpty ? "" : String(localized: "Everything else")) {
-                ForEach(sections.rest, id: \.key) { row($0) }
+            if search.query.isEmpty {
+                myList
+            } else {
+                // While the search field has text, the screen shows TMDB results instead of my list.
+                SearchResultsView(model: search, inList: Set(model.items.map(\.key)))
             }
         }
+        .searchable(text: $search.query, prompt: "Find a movie or series")
+        .task(id: search.query) { await search.search() }
         .overlay {
-            if model.items.isEmpty {
+            if search.query.isEmpty && model.items.isEmpty {
                 ContentUnavailableView("Your list is empty", systemImage: "heart",
-                                       description: Text("Swipe right on the For you tab."))
+                                       description: Text("Swipe right on the For you tab or search above."))
             }
         }
         .toolbar { toolbar }
         .refreshable { await model.refresh() }
         .task { await model.refresh() }
+    }
+
+    @ViewBuilder
+    private var myList: some View {
+        let sections = model.sections
+        if !model.isOnline {
+            OfflineBanner().listRowInsets(EdgeInsets())
+        }
+        if let error = model.errorMessage {
+            Text(error).foregroundStyle(.red)
+        }
+
+        Picker("Show", selection: $model.filter) {
+            Text("All").tag(ListViewModel.Filter.all)
+            Text("Movies").tag(ListViewModel.Filter.movies)
+            Text("Series").tag(ListViewModel.Filter.series)
+        }
+        .pickerStyle(.segmented)
+        .listRowBackground(Color.clear)
+
+        if !sections.pinned.isEmpty {
+            Section("Watching now") {
+                ForEach(sections.pinned, id: \.key) { row($0) }
+            }
+        }
+        Section(sections.pinned.isEmpty ? "" : String(localized: "Everything else")) {
+            ForEach(sections.rest, id: \.key) { row($0) }
+        }
     }
 
     private func row(_ item: ListItem) -> some View {

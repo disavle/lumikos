@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "@%@" : {
-
-    },
     "%@ / %@" : {
       "localizations" : {
         "en" : {
@@ -14,9 +11,7 @@
         }
       }
     },
-    "%@ min" : {
-
-    },
+    "%@ min" : {},
     "%@. %@" : {
       "localizations" : {
         "en" : {
@@ -38,9 +33,7 @@
         }
       }
     },
-    "★ %.1f" : {
-
-    },
+    "@%@" : {},
     "Add to list" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -144,6 +137,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Остальное"
+          }
+        }
+      }
+    },
+    "Find a movie or series" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найти фильм или сериал"
           }
         }
       }
@@ -332,9 +335,18 @@
         }
       }
     },
-    "Seasons: %@" : {
-
+    "SKIP" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "МИМО"
+          }
+        }
+      }
     },
+    "Seasons: %@" : {},
     "Seasons: %lld" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -378,17 +390,6 @@
         }
       }
     },
-    "SKIP" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "МИМО"
-          }
-        }
-      }
-    },
     "Sort" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -400,12 +401,23 @@
         }
       }
     },
-    "Swipe right on the For you tab." : {
+    "Swipe right on the For you tab or search above." : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Свайпай вправо на вкладке «Для тебя»."
+            "value" : "Свайпай вправо на вкладке «Для тебя» или найди через поиск."
+          }
+        }
+      }
+    },
+    "TV series" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сериал"
           }
         }
       }
@@ -449,17 +461,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Повторить"
-          }
-        }
-      }
-    },
-    "TV series" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сериал"
           }
         }
       }
@@ -529,7 +530,8 @@
           }
         }
       }
-    }
+    },
+    "★ %.1f" : {}
   },
   "version" : "1.0"
 }

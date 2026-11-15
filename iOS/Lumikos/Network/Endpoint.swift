@@ -8,6 +8,7 @@ enum Endpoint: Sendable {
     case logout(token: String)
     case deleteAccount
     case feed(page: Int)
+    case search(query: String)
     case details(MediaType, id: Int)
     case season(tvID: Int, number: Int)
     case list
@@ -16,7 +17,7 @@ enum Endpoint: Sendable {
 
     var method: String {
         switch self {
-        case .config, .feed, .details, .season, .list: "GET"
+        case .config, .feed, .search, .details, .season, .list: "GET"
         case .register, .login, .logout: "POST"
         case .saveItem: "PUT"
         case .deleteAccount, .deleteItem: "DELETE"
@@ -31,6 +32,7 @@ enum Endpoint: Sendable {
         case .logout: "auth/logout"
         case .deleteAccount: "me"
         case .feed: "feed"
+        case .search: "search"
         case let .details(type, id): "titles/\(type.rawValue)/\(id)"
         case let .season(tvID, number): "titles/tv/\(tvID)/seasons/\(number)"
         case .list: "list"
@@ -47,6 +49,7 @@ enum Endpoint: Sendable {
     var query: [URLQueryItem] {
         switch self {
         case let .feed(page): [URLQueryItem(name: "page", value: String(page))]
+        case let .search(text): [URLQueryItem(name: "q", value: text)]
         default: []
         }
     }

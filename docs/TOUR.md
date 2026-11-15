@@ -119,5 +119,4 @@ FeedView.task → FeedViewModel.loadIfNeeded → actor FeedLoader → GET /feed
 
 - Sign in with Apple (`AuthenticationServices` + `vapor/jwt`), когда будет аккаунт разработчика.
 - Сброс пароля по почте, лимит попыток входа.
-- Поиск по TMDB на вкладке «Для тебя».
 - Переписать `APIClient` через Apple `swift-openapi-generator` и сравнить.

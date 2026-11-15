@@ -28,7 +28,19 @@ final class ListCoordinator: Coordinator {
         }
         model.onLogOut = { [weak self] in self?.onLogOut?() }
 
-        let controller = UIHostingController(rootView: ListView(model: model))
+        let search = SearchViewModel(api: dependencies.api)
+        search.onOpenDetails = { [weak self, weak model] card in
+            self?.showDetails(of: card) { _ in
+                guard let model else { return }
+                Task { await model.refresh() }
+            }
+        }
+        search.onAdded = { [weak model] in
+            guard let model else { return }
+            Task { await model.refresh() }
+        }
+
+        let controller = UIHostingController(rootView: ListView(model: model, search: search))
         controller.title = String(localized: "My list")
         controller.navigationItem.largeTitleDisplayMode = .always
         navigationController.navigationBar.prefersLargeTitles = true

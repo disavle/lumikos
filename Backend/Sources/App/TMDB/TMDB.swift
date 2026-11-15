@@ -11,13 +11,13 @@ struct TMDB {
         return header.lowercased().hasPrefix("ru") ? "ru-RU" : "en-US"
     }
 
-    func get<T: Decodable>(_ path: String, page: Int? = nil) async throws -> T {
+    func get<T: Decodable>(_ path: String, page: Int? = nil, query extra: [String: String] = [:]) async throws -> T {
         guard let token = Environment.get("TMDB_TOKEN") else {
             throw Abort(.internalServerError, reason: "TMDB_TOKEN is not set")
         }
         let response = try await request.client.get(URI(string: "https://api.themoviedb.org/3/\(path)")) { req in
             req.headers.bearerAuthorization = BearerAuthorization(token: token)
-            var query = ["language": language]
+            var query = extra.merging(["language": language]) { _, new in new }
             if let page { query["page"] = String(page) }
             try req.query.encode(query)
         }
