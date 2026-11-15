@@ -1,3 +1,4 @@
+import Shared
 import Testing
 import VaporTesting
 
@@ -25,7 +26,7 @@ struct AppTests {
 
             try await app.testing().test(.GET, "me", headers: bearer(token)) { res async throws in
                 #expect(res.status == .ok)
-                let me = try res.content.decode(MeResponse.self)
+                let me = try res.content.decode(Me.self)
                 #expect(me.nickname == "movie_fan")
                 #expect(me.email == "fan@example.com")
             }
@@ -71,9 +72,9 @@ struct AppTests {
     func listFlow() async throws {
         try await withApp { app in
             let token = try await register(app)
-            let update = ListItemUpdate(
-                title: "Dark", year: 2017, posterPath: nil, status: "want", pinned: true,
-                rating: 5, watchedEpisodes: ["S1E1"], totalEpisodes: 26
+            let update = ListItem(
+                id: 70523, type: .tv, title: "Dark", year: 2017, posterPath: nil, status: .want, pinned: true,
+                rating: 5, watchedEpisodes: ["S1E1"], totalEpisodes: 26, addedAt: .now
             )
             try await app.testing().test(.PUT, "list/tv/70523", headers: bearer(token), beforeRequest: { req in
                 try req.content.encode(update)
@@ -82,7 +83,7 @@ struct AppTests {
             })
 
             try await app.testing().test(.GET, "list", headers: bearer(token)) { res async throws in
-                let items = try res.content.decode([ListItemDTO].self)
+                let items = try res.content.decode([ListItem].self)
                 #expect(items.count == 1)
                 #expect(items.first?.watchedEpisodes == ["S1E1"])
                 #expect(items.first?.pinned == true)

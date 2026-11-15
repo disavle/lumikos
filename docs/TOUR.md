@@ -5,11 +5,12 @@
 Карта проекта:
 
 ```
+Shared/                   общие модели API: один файл для приложения и сервера
 Backend/Sources/App/      сервер на Vapor (10 файлов)
 Backend/Dockerfile        как сервер упаковывается в образ для Render (остановка 9)
 iOS/Project.swift         описание Xcode-проекта для Tuist
 iOS/Lumikos/App/          запуск, координаторы, зависимости
-iOS/Lumikos/Network/      сеть: APIClient, Endpoint, модели, NetworkMonitor
+iOS/Lumikos/Network/      сеть: APIClient, Endpoint, NetworkMonitor
 iOS/Lumikos/Auth/         вход и регистрация, Keychain
 iOS/Lumikos/Feed/         вкладка «Для тебя»: свайпы
 iOS/Lumikos/List/         вкладка «Мой список» и SwiftData-копия
@@ -63,6 +64,10 @@ FeedView.task → FeedViewModel.loadIfNeeded → actor FeedLoader → GET /feed
 **Открой:** `TMDB/TMDB.swift`, `Controllers/TitlesController.swift`.
 
 - BFF (backend for frontend): приложение не знает про TMDB. Сервер прячет токен и превращает большие ответы TMDB в маленькие DTO (`TitleCard`, `TitleDetails`).
+- **Общие модели, пакет `Shared/`:** DTO описаны один раз в `Shared/Sources/Shared/Models.swift`, это локальный Swift-пакет только на Foundation. Сервер подключает его в `Backend/Package.swift` (`.package(path: "../Shared")`), приложение в `iOS/Project.swift` (`packages: [.local(path: "../Shared")]`), в workspace он виден рядом с проектом. Поменял поле, и обе стороны узнают об этом при компиляции.
+  - Всё в пакете `public`, и у структур явный `public init`: memberwise-инициализатор Swift сам публичным не делает.
+  - Vapor-часть живёт на сервере: в `DTOs.swift` модели получают `Content` и `Validatable` через `extension ... : @retroactive Content`. `@retroactive` нужен, потому что и протокол (Vapor), и тип (Shared) из чужих модулей.
+  - Fluent-модели (`User`, `ListItemModel`) остаются только на сервере: это строки базы, а не JSON. Таблица называется `ListItemModel`, потому что `ListItem` уже занято моделью API.
 - **Язык:** приложение шлёт `Accept-Language` с языком телефона, сервер передаёт TMDB `language=ru-RU` или `en-US`. Названия, описания и жанры приходят на русском, если перевод есть в TMDB. Проверить: Edit Scheme → Run → Options → App Language → Russian.
 - `feed`: `withTaskGroup` запрашивает рекомендации для трёх тайтлов **параллельно**, это structured concurrency на сервере.
 - `search`: TMDB `search/multi` ищет сразу фильмы, сериалы и людей. Людей отбрасывает `TitleCard.init?`, у них нет подходящего `media_type`.
@@ -135,17 +140,17 @@ FeedView.task → FeedViewModel.loadIfNeeded → actor FeedLoader → GET /feed
 
 - **Зачем Docker:** Render запускает не исходники, а готовый образ: маленький Linux, внутри которого лежит собранный сервер. Образ одинаково работает на твоём Mac, в CI и на Render.
 - **Dockerfile в два этапа:**
-  1. `FROM swift:6.x AS build`: полный Swift. Сначала копируются только `Package.*` и выполняется `swift package resolve`: Docker кэширует этот слой, и при правке кода пакеты не качаются заново. Потом `swift build -c release --static-swift-stdlib` вшивает рантайм Swift в бинарник.
+  1. `FROM swift:6.x AS build`: полный Swift. Сначала копируются `Shared/` и `Backend/Package.*` и выполняется `swift package resolve`: Docker кэширует этот слой, и при правке кода пакеты не качаются заново. Потом `swift build -c release --static-swift-stdlib` вшивает рантайм Swift в бинарник.
   2. `FROM ubuntu`: чистая Ubuntu, куда копируется только бинарник `App`. Образ весит около 100 МБ вместо 1+ ГБ. Сервер запускается не от root, `AUTO_MIGRATE=true` создаёт таблицы при старте.
-- `.dockerignore`: в образ не попадают `.build/`, `db.sqlite` и `.env` с токеном.
+- `.dockerignore` (в корне): в образ попадают только `Backend/` и `Shared/`, без `.build/`, `db.sqlite` и `.env` с токеном.
 - **Как образ доезжает до Render (джоба `deploy` в `ci.yml`):** только на `main` и только после зелёных тестов сервера.
-  1. `docker/build-push-action` собирает образ из папки `Backend`, кэш слоёв хранится в GitHub Actions (`type=gha`).
+  1. `docker/build-push-action` собирает образ из корня репозитория (`file: Backend/Dockerfile`), потому что серверу нужен ещё и `Shared/`. Что попадает в образ, решает `.dockerignore` в корне: только `Backend/` и `Shared/`. Кэш слоёв хранится в GitHub Actions (`type=gha`).
   2. Образ уходит в GitHub Container Registry с двумя тегами: `ghcr.io/disavle/lumikos-backend:latest` и `:<sha коммита>`. Логин через встроенный `GITHUB_TOKEN`, отдельный секрет не нужен. Пакет должен быть Public, иначе Render его не скачает.
   3. `curl` дёргает `RENDER_DEPLOY_HOOK` (секрет репозитория) с `imgURL=...:<sha>`. Render скачивает ровно этот образ и перезапускает сервис, в Logs видно «Deploy live».
   4. Переменные окружения (`DATABASE_URL`, `TMDB_TOKEN`, `PORT`) Render передаёт в контейнер сам, в образе их нет.
 - **Сборка на Mac:** нужен Docker Desktop или OrbStack.
   ```bash
-  docker build -t lumikos-backend Backend
+  docker build -f Backend/Dockerfile -t lumikos-backend .   # из корня репозитория
   docker run --rm -p 8080:8080 -e TMDB_TOKEN=eyJ... lumikos-backend
   ```
   Без `DATABASE_URL` сервер в контейнере использует SQLite, данные пропадут после остановки.

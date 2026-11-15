@@ -56,7 +56,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v7
         with:
-          context: Backend
+          context: .                 # repository root: the server needs Shared/ too
+          file: Backend/Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE }}:latest

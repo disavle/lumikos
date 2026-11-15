@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import Observation
+import Shared
 
 @MainActor
 @Observable

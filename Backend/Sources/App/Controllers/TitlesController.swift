@@ -1,4 +1,5 @@
 import Fluent
+import Shared
 import Vapor
 
 /// Data from TMDB: the swipe feed, details, seasons.
@@ -20,7 +21,7 @@ struct TitlesController: RouteCollection {
         let page = max(req.query[Int.self, at: "page"] ?? 1, 1)
         let tmdb = TMDB(request: req)
 
-        let mine = try await ListItem.query(on: req.db)
+        let mine = try await ListItemModel.query(on: req.db)
             .filter(\.$user.$id == user.requireID())
             .sort(\.$addedAt, .descending)
             .all()
@@ -80,7 +81,7 @@ struct TitlesController: RouteCollection {
                 .filter { $0.seasonNumber > 0 }
                 .map { SeasonInfo(number: $0.seasonNumber, name: $0.name, episodeCount: $0.episodeCount) },
             totalEpisodes: info.numberOfEpisodes,
-            myItem: mine.map(ListItemDTO.init)
+            myItem: mine.map(ListItem.init)
         )
         // Not cached: `myItem` changes whenever I tap a button.
         return try await details.encodeResponse(for: req)

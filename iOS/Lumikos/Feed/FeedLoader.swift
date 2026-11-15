@@ -1,3 +1,5 @@
+import Shared
+
 /// Loads feed pages one by one.
 ///
 /// Why an actor: the user can swipe fast, and two swipes may ask for "the next page" at the same time.

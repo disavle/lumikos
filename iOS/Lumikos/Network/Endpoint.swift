@@ -1,4 +1,5 @@
 import Foundation
+import Shared
 
 /// Every request the app makes, in one enum. Adding a request = adding a case here.
 enum Endpoint: Sendable {
@@ -56,9 +57,9 @@ enum Endpoint: Sendable {
     var body: (any Encodable & Sendable)? {
         switch self {
         case let .register(email, nickname, password):
-            ["email": email, "nickname": nickname, "password": password]
+            RegisterRequest(email: email, nickname: nickname, password: password)
         case let .login(login, password):
-            ["login": login, "password": password]
+            LoginRequest(login: login, password: password)
         case let .saveItem(item):
             item
         default:

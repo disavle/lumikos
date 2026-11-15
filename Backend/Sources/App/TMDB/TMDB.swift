@@ -1,3 +1,4 @@
+import Shared
 import Vapor
 
 /// A tiny client for The Movie Database API (https://developer.themoviedb.org/reference).

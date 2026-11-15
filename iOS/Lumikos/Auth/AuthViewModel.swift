@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import Shared
 
 /// Login and sign up in one screen. `mode` switches between them.
 @MainActor

@@ -1,3 +1,4 @@
+import Shared
 import SwiftUI
 
 /// A TMDB poster. AsyncImage downloads it and URLCache keeps it, so scrolling back is instant.

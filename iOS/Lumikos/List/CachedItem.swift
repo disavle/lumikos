@@ -1,4 +1,5 @@
 import Foundation
+import Shared
 import SwiftData
 
 /// SwiftData copy of one list item, so the list opens without internet.

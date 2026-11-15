@@ -1,7 +1,7 @@
 # Docker image of the Lumikos server. Based on the official Vapor template.
 #
-# Build from the Backend folder:
-#     docker build -t lumikos-backend Backend
+# Build from the REPOSITORY ROOT, because the server needs the Shared package next to it:
+#     docker build -f Backend/Dockerfile -t lumikos-backend .
 # Run locally (SQLite inside the container, data is lost when it stops):
 #     docker run --rm -p 8080:8080 -e TMDB_TOKEN=... lumikos-backend
 #
@@ -24,24 +24,25 @@ WORKDIR /build
 
 # First copy only the package manifests and resolve dependencies.
 # Docker caches this layer, so a code change does not download all packages again.
-COPY ./Package.* ./
-RUN swift package resolve
+COPY ./Shared ./Shared
+COPY ./Backend/Package.* ./Backend/
+RUN swift package --package-path Backend resolve
 
 # Now the code itself, and a release build.
 # --static-swift-stdlib puts the Swift runtime into the binary, so the second stage does not need Swift.
-COPY . .
-RUN swift build -c release \
+COPY ./Backend ./Backend
+RUN swift build --package-path Backend -c release \
         --product App \
         --static-swift-stdlib \
         -Xlinker -ljemalloc
 
 # Collect everything the app needs into /staging
 WORKDIR /staging
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/App" ./
+RUN cp "$(swift build --package-path /build/Backend -c release --show-bin-path)/App" ./
 # Readable crash logs
 RUN cp "/usr/libexec/swift/linux/swift-backtrace-static" ./
 # Resources of SPM packages, if any
-RUN find -L "$(swift build --package-path /build -c release --show-bin-path)/" \
+RUN find -L "$(swift build --package-path /build/Backend -c release --show-bin-path)/" \
         -regex '.*\.resources$' -exec cp -Ra {} ./ \;
 
 # ================================

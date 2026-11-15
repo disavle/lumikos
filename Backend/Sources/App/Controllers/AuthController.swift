@@ -1,4 +1,5 @@
 import Fluent
+import Shared
 import Vapor
 
 /// Sign up, log in, log out. Email + nickname + password.
@@ -60,16 +61,16 @@ struct AuthController: RouteCollection {
     private func issueToken(for user: User, on req: Request) async throws -> AuthResponse {
         let (plain, token) = try UserToken.generate(for: user)
         try await token.save(on: req.db)
-        return AuthResponse(token: plain, user: MeResponse(email: user.email, nickname: user.nickname))
+        return AuthResponse(token: plain, user: Me(email: user.email, nickname: user.nickname))
     }
 }
 
 /// GET /me and DELETE /me (the App Store requires a way to delete the account).
 struct MeController: RouteCollection {
     func boot(routes: any RoutesBuilder) throws {
-        routes.get("me") { req async throws -> MeResponse in
+        routes.get("me") { req async throws -> Me in
             let user = try req.auth.require(User.self)
-            return MeResponse(email: user.email, nickname: user.nickname)
+            return Me(email: user.email, nickname: user.nickname)
         }
         routes.delete("me") { req async throws -> HTTPStatus in
             // Tokens and list items go away too: their foreign keys have `onDelete: .cascade`.

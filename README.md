@@ -18,6 +18,7 @@ A small iOS app for movies and series. Swipe recommendation cards like in Tinder
 | Combine | `NetworkMonitor`: `NWPathMonitor` → `CurrentValueSubject` → `for await` |
 | Other | String Catalog (en + ru), Swift Testing, Maestro UI flow |
 | Tools | Tuist (one app target), mise, fastlane, GitHub Actions |
+| Shared | one local Swift package with the API models, used by both the app and the server |
 | Server | Vapor + Fluent: a BFF over [TMDB](https://www.themoviedb.org), email + nickname + password login (Bcrypt), Postgres on Neon, Render |
 
 ## Run it

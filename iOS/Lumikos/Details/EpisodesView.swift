@@ -1,3 +1,4 @@
+import Shared
 import SwiftUI
 
 /// Seasons as expandable groups. Episodes are loaded when a season is opened for the first time.

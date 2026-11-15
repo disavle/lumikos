@@ -13,6 +13,8 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.14.1"),
         // SHA-256 for login tokens (Vapor itself already uses this package)
         .package(url: "https://github.com/apple/swift-crypto.git", "3.0.0"..<"5.0.0"),
+        // API models shared with the iOS app
+        .package(path: "../Shared"),
     ],
     targets: [
         .executableTarget(
@@ -23,6 +25,7 @@ let package = Package(
                 .product(name: "FluentSQLiteDriver", package: "fluent-sqlite-driver"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Crypto", package: "swift-crypto"),
+                .product(name: "Shared", package: "Shared"),
             ]
         ),
         .testTarget(
@@ -30,6 +33,7 @@ let package = Package(
             dependencies: [
                 .target(name: "App"),
                 .product(name: "VaporTesting", package: "vapor"),
+                .product(name: "Shared", package: "Shared"),
             ]
         ),
     ]

@@ -1,3 +1,4 @@
+import Shared
 import SwiftUI
 
 /// A Tinder-like card. Drag it left or right far enough and it flies away.

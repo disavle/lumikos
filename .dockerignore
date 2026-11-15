@@ -1,0 +1,8 @@
+# Only Backend/ and Shared/ go into the server image (see Backend/Dockerfile)
+*
+!Backend
+!Shared
+Backend/.build
+Backend/db.sqlite
+Backend/.env
+Shared/.build

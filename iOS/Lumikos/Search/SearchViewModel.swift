@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import Shared
 
 /// Search for movies and series by name, to add them to my list.
 @MainActor

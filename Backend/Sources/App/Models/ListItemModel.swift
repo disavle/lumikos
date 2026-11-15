@@ -1,9 +1,10 @@
 import Fluent
 import Vapor
 
-/// One movie or series in a user's list.
+/// One movie or series in a user's list: a row of the `list_items` table.
+/// Named ListItemModel, because `ListItem` is the API model from Shared.
 /// We copy title, year and poster from TMDB, so the list loads without asking TMDB again.
-final class ListItem: Model, @unchecked Sendable {
+final class ListItemModel: Model, @unchecked Sendable {
     static let schema = "list_items"
 
     @ID(key: .id) var id: UUID?
@@ -26,7 +27,7 @@ final class ListItem: Model, @unchecked Sendable {
 
 struct CreateListItem: AsyncMigration {
     func prepare(on database: any Database) async throws {
-        try await database.schema(ListItem.schema)
+        try await database.schema(ListItemModel.schema)
             .id()
             .field("user_id", .uuid, .required, .references(User.schema, "id", onDelete: .cascade))
             .field("tmdb_id", .int, .required)
@@ -47,6 +48,6 @@ struct CreateListItem: AsyncMigration {
     }
 
     func revert(on database: any Database) async throws {
-        try await database.schema(ListItem.schema).delete()
+        try await database.schema(ListItemModel.schema).delete()
     }
 }

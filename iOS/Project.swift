@@ -12,6 +12,9 @@ let serverURL = "https://buzz-backend-latest.onrender.com"
 
 let project = Project(
     name: "Lumikos",
+    // A local Swift package with the API models, the server uses the same one (../Shared).
+    // Xcode shows it in the workspace next to the project.
+    packages: [.local(path: "../Shared")],
     targets: [
         .target(
             name: "Lumikos",
@@ -42,6 +45,7 @@ let project = Project(
             ]),
             sources: ["Lumikos/**/*.swift"],
             resources: ["Lumikos/Resources/**"],
+            dependencies: [.package(product: "Shared")],
             settings: .settings(base: [
                 "SWIFT_VERSION": "6.0",
                 // Your Team ID from mise.local.toml (TUIST_TEAM_ID). Empty is fine for the simulator.
@@ -56,7 +60,7 @@ let project = Project(
             bundleId: "com.disavle.lumikos.tests",
             deploymentTargets: .iOS("18.0"),
             sources: ["LumikosTests/**"],
-            dependencies: [.target(name: "Lumikos")],
+            dependencies: [.target(name: "Lumikos"), .package(product: "Shared")],
             settings: .settings(base: ["SWIFT_VERSION": "6.0"])
         ),
     ]
