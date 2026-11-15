@@ -109,6 +109,9 @@ struct ListView: View {
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 Text("@\(model.nickname)")
+                if let email = model.email {
+                    Text(email)
+                }
                 Button("Log out") { model.logOut() }
                 Button("Delete account", role: .destructive) { Task { await model.deleteAccount() } }
             } label: {

@@ -22,6 +22,7 @@ final class ListViewModel {
     private(set) var isOnline = true
     private(set) var errorMessage: String?
     let nickname: String
+    private(set) var email: String?
 
     var onOpenDetails: ((ListItem) -> Void)?
     var onLogOut: (() -> Void)?
@@ -67,6 +68,8 @@ final class ListViewModel {
     }
 
     func refresh() async {
+        async let me: Me? = try? api.send(.me)
+
         do {
             let fresh: [ListItem] = try await api.send(.list)
             items = fresh
@@ -76,6 +79,8 @@ final class ListViewModel {
             // Offline: keep showing the cached copy.
             if network.isOnlineNow { errorMessage = error.localizedDescription }
         }
+
+        email = await me?.email
     }
 
     /// Combine: subscribe to the publisher with `sink`. The subscription lives while we keep the AnyCancellable.

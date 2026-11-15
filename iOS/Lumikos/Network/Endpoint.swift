@@ -14,10 +14,11 @@ enum Endpoint: Sendable {
     case list
     case saveItem(ListItem)
     case deleteItem(MediaType, id: Int)
+    case me
 
     var method: String {
         switch self {
-        case .feed, .search, .details, .season, .list: "GET"
+        case .feed, .search, .details, .season, .list, .me: "GET"
         case .register, .login, .logout: "POST"
         case .saveItem: "PUT"
         case .deleteAccount, .deleteItem: "DELETE"
@@ -29,7 +30,7 @@ enum Endpoint: Sendable {
         case .register: "auth/register"
         case .login: "auth/login"
         case .logout: "auth/logout"
-        case .deleteAccount: "me"
+        case .deleteAccount, .me: "me"
         case .feed: "feed"
         case .search: "search"
         case let .details(type, id): "titles/\(type.rawValue)/\(id)"
