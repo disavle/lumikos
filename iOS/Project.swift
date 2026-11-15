@@ -3,6 +3,10 @@ import ProjectDescription
 // Tuist turns this file into Lumikos.xcodeproj (`mise run generate`).
 // The .xcodeproj is not in git: no merge conflicts in project files, ever.
 //
+// The server the app talks to. It goes into Info.plist as `APIURL`, the app reads it on start.
+// A URL is not a secret, so it can live in git. Change it here and run `mise run generate`.
+let serverURL = "https://buzz-backend-latest.onrender.com"
+
 // One app target with all the code (folders instead of modules) and one test target.
 // Tests always need their own target in Xcode, that is the only reason for the second one.
 
@@ -19,6 +23,7 @@ let project = Project(
                 "CFBundleShortVersionString": "0.1.0",
                 "CFBundleVersion": "1",
                 "CFBundleDisplayName": "Lumikos",
+                "APIURL": .string(serverURL),
                 "UILaunchScreen": [:],
                 // Without this iOS does not show the "Language" row in the app's settings.
                 "CFBundleLocalizations": ["en", "ru"],

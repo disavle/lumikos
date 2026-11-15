@@ -20,18 +20,15 @@ final class AppDependencies {
     }
 
     /// Which server to use:
-    /// - the API_URL variable, if set (Xcode scheme → Run → Environment, or Maestro);
-    /// - the simulator: the server on this Mac (`mise run api`);
-    /// - a real iPhone: the server on Render.
+    /// - by default, simulator and iPhone: `APIURL` from Info.plist (set in iOS/Project.swift);
+    /// - the API_URL variable, if set: for example `http://localhost:8080` for `mise run api`
+    ///   (Xcode → Edit Scheme → Run → Environment Variables). Handy for a quick local test.
     static var serverURL: URL {
         if let custom = ProcessInfo.processInfo.environment["API_URL"], let url = URL(string: custom) {
             return url
         }
-        #if targetEnvironment(simulator)
-        return URL(string: "http://localhost:8080")!
-        #else
-        return URL(string: "https://buzz-backend-latest.onrender.com")!
-        #endif
+        let plistValue = Bundle.main.object(forInfoDictionaryKey: "APIURL") as? String ?? ""
+        return URL(string: plistValue)!
     }
 }
 

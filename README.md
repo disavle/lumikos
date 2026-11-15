@@ -30,7 +30,7 @@ mise run api                          # terminal 1: server on http://localhost:8
 mise run generate                     # terminal 2: creates Lumikos.xcodeproj and opens Xcode
 ```
 
-Run the `Lumikos` scheme in a simulator and sign up. The simulator talks to `localhost`, a real iPhone to the server on Render.
+Run the `Lumikos` scheme in a simulator and sign up. The app talks to the server from `serverURL` in `iOS/Project.swift` (Render; it goes into Info.plist). To use your local server once, set `API_URL` = `http://localhost:8080` in Edit Scheme → Run → Environment Variables.
 
 Tests: `mise run test` (iOS + server), UI flow: `maestro test .maestro`.
 
@@ -71,7 +71,7 @@ mise run api                          # терминал 1: сервер на ht
 mise run generate                     # терминал 2: создаёт Lumikos.xcodeproj и открывает Xcode
 ```
 
-Запусти схему `Lumikos` в симуляторе и зарегистрируйся. Симулятор ходит на `localhost`, настоящий iPhone на сервер в Render.
+Запусти схему `Lumikos` в симуляторе и зарегистрируйся. Приложение ходит на сервер из `serverURL` в `iOS/Project.swift` (Render, попадает в Info.plist). Чтобы разово сходить на локальный сервер, добавь `API_URL` = `http://localhost:8080` в Edit Scheme → Run → Environment Variables.
 
 Тесты: `mise run test` (iOS и сервер), UI-сценарий: `maestro test .maestro`.
 
